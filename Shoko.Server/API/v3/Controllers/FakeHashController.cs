@@ -108,7 +108,16 @@ public class FakeHashController : BaseController
 
         if (place == null)
         {
-            return ValidationProblem("Unable to resolve or create a file location.");
+            if (importFolder == null || string.IsNullOrWhiteSpace(relativePath))
+                return ValidationProblem("Unable to resolve or create a file location.");
+
+            place = new SVR_VideoLocal_Place
+            {
+                FilePath = relativePath,
+                ImportFolderID = importFolder.ImportFolderID,
+                ImportFolderType = importFolder.ImportFolderType,
+                VideoLocalID = vlocal.VideoLocalID
+            };
         }
 
         if (place.VideoLocalID == 0)
