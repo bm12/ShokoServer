@@ -42,3 +42,33 @@
 
 ---
 Feel free to add guidelines to this if you deem it helpful (I'm sure cazzar and avael can think of a few)
+
+---
+### Admin utility endpoints
+
+#### FakeHash (v3)
+**Purpose:** Store pre-computed (or externally provided) hashes and metadata for a file so Shoko treats it as already hashed.
+
+**Warning:** Supplying fake hashes will affect matching, duplicate detection, and external integrations (AniDB/MyList, hash-based lookups). Only use if you understand the implications.
+
+**Example request:**
+```http
+POST /api/v3/FakeHash
+Content-Type: application/json
+
+{
+  "importFolderId": 1,
+  "filePath": "Anime/Show/episode01.mkv",
+  "fileSize": 123456789,
+  "hashes": {
+    "ed2k": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "crc32": "DEADBEEF",
+    "md5": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "sha1": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+  },
+  "hashSource": "DirectHash",
+  "dateCreated": "2024-01-01T00:00:00Z",
+  "dateUpdated": "2024-01-01T00:00:00Z",
+  "dateImported": "2024-01-01T00:00:00Z"
+}
+```
