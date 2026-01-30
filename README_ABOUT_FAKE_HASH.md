@@ -1,7 +1,10 @@
-### How to build localy
-```
-docker build \
-  --build-arg version="<actual_release-fakehash.1>" \
+### How to build locally
+
+#### Option 1: With proxy (original Dockerfile)
+Use this if you have a working HTTP proxy that can access `deb.debian.org` and `mediaarea.net`:
+```bash
+docker build --no-cache \
+  --build-arg version="<actual_release>-fakehash.1" \
   --build-arg HTTP_PROXY="http://<local_ip_address>:1080" \
   --build-arg HTTPS_PROXY="http://<local_ip_address>:1080" \
   --build-arg http_proxy="http://<local_ip_address>:1080" \
@@ -9,10 +12,11 @@ docker build \
   -t shoko-server:custom \
   .
 ```
-or if you want to get stable version of ui:
-```
-docker build \
-  --build-arg version="<actual_release-fakehash.1>" \
+
+With stable Web UI:
+```bash
+docker build --no-cache \
+  --build-arg version="<actual_release>-fakehash.1" \
   --build-arg channel="stable" \
   --build-arg HTTP_PROXY="http://<local_ip_address>:1080" \
   --build-arg HTTPS_PROXY="http://<local_ip_address>:1080" \
@@ -21,6 +25,36 @@ docker build \
   -t shoko-server:custom \
   .
 ```
+
+#### Option 2: Without proxy (Dockerfile.noproxy)
+Use this for building without a proxy. Uses Yandex mirror and Debian's mediainfo:
+```bash
+docker build --no-cache -f Dockerfile.noproxy \
+  --build-arg version="<actual_release>-fakehash.1" \
+  -t shoko-server:custom \
+  .
+```
+
+With stable Web UI:
+```bash
+docker build --no-cache -f Dockerfile.noproxy \
+  --build-arg version="<actual_release>-fakehash.1" \
+  --build-arg channel="stable" \
+  -t shoko-server:custom \
+  .
+```
+
+#### Notes
+> **Proxy instability:** If the build fails with `502 Bad Gateway` errors during `apt-get install`, 
+> your proxy may be unstable. Restart the proxy server and try the build again.
+
+> **Channel switching:** If switching between `channel="stable"` and `channel="dev"`, use `--no-cache` 
+> to ensure Docker doesn't use cached layers with the wrong Web UI version.
+
+> **Web UI cache:** The Web UI is cached in the config volume (`/home/shoko/.shoko/Shoko.CLI/webui/`).
+> If you get version mismatch errors after rebuilding, use the "Force Update to Stable Web UI" button in the Shoko interface.
+
+---
 
 #### FakeHash (v3)
 **Purpose:** Store pre-computed (or externally provided) hashes and metadata for a file so Shoko treats it as already hashed.
